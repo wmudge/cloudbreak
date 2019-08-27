@@ -53,6 +53,9 @@ public class OpenStackHeatConnector implements CloudConnector<Object> {
     private OpenStackSetup openStackSetup;
 
     @Inject
+    private OpenStackHeatNetworkConnector openStackHeatNetworkConnector;
+
+    @Inject
     private OpenStackPlatformResources openStackPlatformResources;
 
     @Inject
@@ -129,6 +132,6 @@ public class OpenStackHeatConnector implements CloudConnector<Object> {
 
     @Override
     public NetworkConnector networkConnector() {
-        return null;
+        return openStackHeatNetworkConnector;
     }
 }

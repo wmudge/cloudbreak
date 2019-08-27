@@ -10,8 +10,8 @@ import com.sequenceiq.environment.parameters.dao.domain.AzureParameters;
 import com.sequenceiq.environment.parameters.dao.domain.BaseParameters;
 import com.sequenceiq.environment.parameters.dto.AzureParametersDto;
 import com.sequenceiq.environment.parameters.dto.AzureResourceGroupDto;
+import com.sequenceiq.environment.parameters.dto.AzureResourceGroupDto.Builder;
 import com.sequenceiq.environment.parameters.dto.ParametersDto;
-import com.sequenceiq.environment.parameters.dto.ParametersDto.Builder;
 
 @Component
 public class AzureEnvironmentParametersConverter extends BaseEnvironmentParametersConverter {
@@ -47,7 +47,7 @@ public class AzureEnvironmentParametersConverter extends BaseEnvironmentParamete
     }
 
     @Override
-    protected void postConvertToDto(Builder builder, BaseParameters source) {
+    protected void postConvert(BaseParameters baseParameters, Environment environment, ParametersDto parametersDto) {
         super.postConvertToDto(builder, source);
         AzureParameters azureParameters = (AzureParameters) source;
         builder.withAzureParameters(AzureParametersDto.builder()

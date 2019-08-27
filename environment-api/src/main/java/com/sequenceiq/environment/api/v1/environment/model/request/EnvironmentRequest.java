@@ -21,6 +21,8 @@ import com.sequenceiq.environment.api.v1.environment.model.base.CloudStorageVali
 import com.sequenceiq.environment.api.v1.environment.model.base.IdBrokerMappingSource;
 import com.sequenceiq.environment.api.v1.environment.model.request.aws.AwsEnvironmentParameters;
 import com.sequenceiq.environment.api.v1.environment.model.request.azure.AzureEnvironmentParameters;
+import com.sequenceiq.environment.api.v1.environment.model.request.gcp.GcpEnvironmentParameters;
+import com.sequenceiq.environment.api.v1.environment.model.request.openstack.OpenstackEnvironmentParameters;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -91,7 +93,7 @@ public class EnvironmentRequest extends EnvironmentBaseRequest implements Creden
     private AwsEnvironmentParameters aws;
 
     @Valid
-    @ApiModelProperty(EnvironmentModelDescription.AWS_PARAMETERS)
+    @ApiModelProperty(EnvironmentModelDescription.AZURE_PARAMETERS)
     private AzureEnvironmentParameters azure;
 
     @Valid
@@ -100,6 +102,14 @@ public class EnvironmentRequest extends EnvironmentBaseRequest implements Creden
 
     @ApiModelProperty(value = EnvironmentModelDescription.PARENT_ENVIRONMENT_NAME)
     private String parentEnvironmentName;
+
+    @Valid
+    @ApiModelProperty(EnvironmentModelDescription.GCP_PARAMETERS)
+    private GcpEnvironmentParameters gcp;
+
+    @Valid
+    @ApiModelProperty(EnvironmentModelDescription.OPENSTACK_PARAMETERS)
+    private OpenstackEnvironmentParameters openstack;
 
     public AttachedFreeIpaRequest getFreeIpa() {
         return freeIpa;
@@ -253,5 +263,21 @@ public class EnvironmentRequest extends EnvironmentBaseRequest implements Creden
 
     public void setProxyConfigName(String proxyConfigName) {
         this.proxyConfigName = proxyConfigName;
+    }
+
+    public GcpEnvironmentParameters getGcp() {
+        return gcp;
+    }
+
+    public void setGcp(GcpEnvironmentParameters gcp) {
+        this.gcp = gcp;
+    }
+
+    public OpenstackEnvironmentParameters getOpenstack() {
+        return openstack;
+    }
+
+    public void setOpenstack(OpenstackEnvironmentParameters openstack) {
+        this.openstack = openstack;
     }
 }

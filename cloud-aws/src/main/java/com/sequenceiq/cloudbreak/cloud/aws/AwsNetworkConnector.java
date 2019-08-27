@@ -212,7 +212,7 @@ public class AwsNetworkConnector extends DefaultNetworkConnector {
     }
 
     private CreatedCloudNetwork getCreatedNetworkWithPolling(NetworkCreationRequest networkRequest, AwsCredentialView credentialView,
-            AmazonCloudFormationRetryClient cloudFormationRetryClient, List<SubnetRequest> subnetRequests) {
+                                                             AmazonCloudFormationRetryClient cloudFormationRetryClient, List<SubnetRequest> subnetRequests) {
         PollTask<Boolean> pollTask = getNewNetworkPollTask(credentialView, networkRequest);
         try {
             awsBackoffSyncPollingScheduler.schedule(pollTask);
@@ -223,7 +223,7 @@ public class AwsNetworkConnector extends DefaultNetworkConnector {
     }
 
     private CreatedCloudNetwork getCreatedCloudNetwork(AmazonCloudFormationRetryClient cloudFormationRetryClient, NetworkCreationRequest networkRequest,
-            List<SubnetRequest> subnetRequests) {
+                                                       List<SubnetRequest> subnetRequests) {
         Map<String, String> output = cfStackUtil.getOutputs(networkRequest.getStackName(), cloudFormationRetryClient);
         String vpcId = getCreatedVpc(output);
         Set<CreatedSubnet> subnets = awsCreatedSubnetProvider.provide(output, subnetRequests, networkRequest.isPrivateSubnetEnabled());

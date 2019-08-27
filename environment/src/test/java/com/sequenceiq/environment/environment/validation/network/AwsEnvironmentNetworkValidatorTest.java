@@ -28,6 +28,7 @@ import com.sequenceiq.environment.environment.domain.Environment;
 import com.sequenceiq.environment.environment.dto.EnvironmentDto;
 import com.sequenceiq.environment.network.CloudNetworkService;
 import com.sequenceiq.environment.network.dao.domain.RegistrationType;
+import com.sequenceiq.environment.environment.validation.network.aws.AwsEnvironmentNetworkValidator;
 import com.sequenceiq.environment.network.dto.AwsParams;
 import com.sequenceiq.environment.network.dto.AwsParams.AwsParamsBuilder;
 import com.sequenceiq.environment.network.dto.NetworkDto;

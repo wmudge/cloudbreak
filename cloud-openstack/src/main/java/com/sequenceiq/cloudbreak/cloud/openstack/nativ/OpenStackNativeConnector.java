@@ -44,6 +44,9 @@ public class OpenStackNativeConnector implements CloudConnector<List<CloudResour
     private OpenStackNativeInstanceConnector instanceConnector;
 
     @Inject
+    private OpenStackNativeNetworkConnector openStackNativeNetworkConnector;
+
+    @Inject
     private OpenStackSetup openStackSetup;
 
     @Inject
@@ -123,7 +126,7 @@ public class OpenStackNativeConnector implements CloudConnector<List<CloudResour
 
     @Override
     public NetworkConnector networkConnector() {
-        return null;
+        return openStackNativeNetworkConnector;
     }
 
 }

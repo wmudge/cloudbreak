@@ -2,15 +2,20 @@ package com.sequenceiq.cloudbreak.cloud.openstack.view;
 
 import static org.apache.commons.lang3.StringUtils.deleteWhitespace;
 
+import java.util.Map;
+
 import com.sequenceiq.cloudbreak.cloud.context.AuthenticatedContext;
 import com.sequenceiq.cloudbreak.cloud.model.CloudCredential;
 
 public class KeystoneCredentialView {
+
     public static final String CB_KEYSTONE_V2 = "cb-keystone-v2";
 
     public static final String CB_KEYSTONE_V3_PROJECT_SCOPE = "cb-keystone-v3-project-scope";
 
     public static final String CB_KEYSTONE_V3_DOMAIN_SCOPE = "cb-keystone-v3-domain-scope";
+
+    private static final String OPENSTACK = "openstack";
 
     private static final String CB_KEYPAIR_NAME = "cb";
 
@@ -41,42 +46,53 @@ public class KeystoneCredentialView {
     }
 
     public String getUserName() {
-        return cloudCredential.getParameter("userName", String.class);
+        return getOpenstack().get("userName").toString();
     }
 
     public String getPassword() {
-        return cloudCredential.getParameter("password", String.class);
+        return getOpenstack().get("password").toString();
     }
 
     public String getTenantName() {
-        return cloudCredential.getParameter("tenantName", String.class);
+        return getKeystoneV2().get("tenantName").toString();
     }
 
     public String getEndpoint() {
-        return cloudCredential.getParameter("endpoint", String.class);
+        return getOpenstack().get("endpoint").toString();
     }
 
     public String getUserDomain() {
-        return cloudCredential.getParameter("userDomain", String.class);
+        return getOpenstack().get("userDomain").toString();
     }
 
     public String getProjectName() {
-        return cloudCredential.getParameter("projectName", String.class);
+        return getOpenstack().get("projectName").toString();
     }
 
     public String getProjectDomain() {
-        return cloudCredential.getParameter("projectDomainName", String.class);
+        return getOpenstack().get("projectDomainName").toString();
     }
 
     public String getDomainName() {
-        return cloudCredential.getParameter("domainName", String.class);
+        return getOpenstack().get("domainName").toString();
     }
 
     public String getScope() {
-        return cloudCredential.getParameter("keystoneAuthScope", String.class);
+        return getOpenstack().get("keystoneAuthScope").toString();
     }
 
     public String getVersion() {
-        return cloudCredential.getParameter("keystoneVersion", String.class);
+        return getKeystoneV2() != null && !getKeystoneV2().isEmpty() ? CB_KEYSTONE_V2 : null;
+    }
+
+    private Map<String, Object> getKeystoneV2() {
+        return (Map<String, Object>) getOpenstack().get("keystoneV2");
+    }
+
+    private Map<String, Object> getOpenstack() {
+        if (cloudCredential.hasParameter(OPENSTACK)) {
+            return (Map<String, Object>) cloudCredential.getParameter(OPENSTACK, Map.class);
+        }
+        return cloudCredential.getParameters();
     }
 }

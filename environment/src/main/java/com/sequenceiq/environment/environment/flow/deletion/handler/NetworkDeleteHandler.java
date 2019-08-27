@@ -5,6 +5,7 @@ import static com.sequenceiq.environment.environment.flow.deletion.event.EnvDele
 
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.sequenceiq.environment.environment.dto.EnvironmentDto;
 import com.sequenceiq.environment.environment.dto.EnvironmentDtoConverter;
 import com.sequenceiq.environment.environment.flow.deletion.event.EnvDeleteEvent;
