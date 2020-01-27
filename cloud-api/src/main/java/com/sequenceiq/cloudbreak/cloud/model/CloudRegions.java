@@ -1,6 +1,8 @@
 package com.sequenceiq.cloudbreak.cloud.model;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,9 +22,27 @@ public class CloudRegions {
 
     public CloudRegions(Map<Region, List<AvailabilityZone>> cloudRegions, Map<Region, String> displayNames, Map<Region, Coordinate> coordinates,
             String defaultRegion, boolean regionsSupported) {
-        this.cloudRegions = cloudRegions;
-        this.displayNames = displayNames;
-        this.coordinates = coordinates;
+        this.cloudRegions = cloudRegions
+                .entrySet()
+                .stream()
+                .sorted(Comparator.comparing(o -> o.getKey().getRegionName()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+        this.displayNames = displayNames
+                .entrySet()
+                .stream()
+                .sorted(Comparator.comparing(o -> o.getKey().getRegionName()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+        this.coordinates = coordinates
+                .entrySet()
+                .stream()
+                .sorted(Comparator.comparing(o -> o.getKey().getRegionName()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
         this.defaultRegion = defaultRegion;
         this.regionsSupported = regionsSupported;
     }
