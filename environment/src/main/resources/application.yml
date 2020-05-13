@@ -169,3 +169,28 @@ spring:
 
 notification:
   urls: http://localhost:3000/notifications
+
+experience:
+  scan:
+    protocol: https
+    enabled: false
+    liftie:
+      api:
+        port: 9999
+        address: localhost
+    dwx:
+      api:
+        port: 9001
+        address: 127.0.0.1
+        protocol: http
+    xp:
+      path:
+        componentToReplace: "{crn}"
+        postfix: "/cp-internal/environment/{crn}"
+    xpservices:
+      experiences[Machine Learning Experience].pathPrefix: ${MLX_PATH_PREFIX}
+      experiences[Machine Learning Experience].pathInfix: ${MLX_PATH_INFIX}
+      experiences[Machine Learning Experience].port: ${MLX_PATH_PORT}
+      experiences[Data Warehouse Experience].pathPrefix: ${DWX_PATH_PREFIX}
+      experiences[Data Warehouse Experience].pathInfix: ${DWX_PATH_INFIX}
+      experiences[Data Warehouse Experience].port: ${DWX_PATH_PORT}
