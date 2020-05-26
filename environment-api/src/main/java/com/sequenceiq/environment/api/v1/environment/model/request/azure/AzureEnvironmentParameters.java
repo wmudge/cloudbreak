@@ -6,7 +6,6 @@ import com.sequenceiq.environment.api.doc.environment.EnvironmentModelDescriptio
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "AzureEnvironmentV1Parameters")
 public class AzureEnvironmentParameters {
@@ -23,9 +22,6 @@ public class AzureEnvironmentParameters {
         this.resourceGroup = resourceGroup;
     }
 
-    private AzureEnvironmentParameters(AzureEnvironmentParameters.Builder builder) {
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -40,7 +36,9 @@ public class AzureEnvironmentParameters {
         }
 
         public AzureEnvironmentParameters build() {
-            return new AzureEnvironmentParameters(this);
+            AzureEnvironmentParameters azureEnvironmentParameters = new AzureEnvironmentParameters();
+            azureEnvironmentParameters.setResourceGroup(azureResourceGroup);
+            return azureEnvironmentParameters;
         }
     }
 }
