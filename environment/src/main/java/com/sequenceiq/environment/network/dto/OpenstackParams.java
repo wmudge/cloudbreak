@@ -42,7 +42,11 @@ public class OpenstackParams {
         this.networkingOption = networkingOption;
     }
 
-    public static final class OpenstackParamsBuilder {
+    public static OpenstackParams.Builder builder() {
+        return new OpenstackParams.Builder();
+    }
+
+    public static final class Builder {
         private String networkId;
 
         private String routerId;
@@ -51,29 +55,25 @@ public class OpenstackParams {
 
         private String networkingOption;
 
-        private OpenstackParamsBuilder() {
+        private Builder() {
         }
 
-        public static OpenstackParamsBuilder anOpenstackParams() {
-            return new OpenstackParamsBuilder();
-        }
-
-        public OpenstackParamsBuilder withNetworkId(String networkId) {
+        public Builder withNetworkId(String networkId) {
             this.networkId = networkId;
             return this;
         }
 
-        public OpenstackParamsBuilder withRouterId(String routerId) {
+        public Builder withRouterId(String routerId) {
             this.routerId = routerId;
             return this;
         }
 
-        public OpenstackParamsBuilder withPublicNetId(String publicNetId) {
+        public Builder withPublicNetId(String publicNetId) {
             this.publicNetId = publicNetId;
             return this;
         }
 
-        public OpenstackParamsBuilder withNetworkingOption(String networkingOption) {
+        public Builder withNetworkingOption(String networkingOption) {
             this.networkingOption = networkingOption;
             return this;
         }

@@ -42,7 +42,11 @@ public class GcpParams {
         this.noFirewallRules = noFirewallRules;
     }
 
-    public static final class GcpParamsBuilder {
+    public static GcpParams.Builder builder() {
+        return new GcpParams.Builder();
+    }
+
+    public static final class Builder {
 
         private String networkId;
 
@@ -52,29 +56,25 @@ public class GcpParams {
 
         private Boolean noFirewallRules;
 
-        private GcpParamsBuilder() {
+        private Builder() {
         }
 
-        public static GcpParamsBuilder aGcpParams() {
-            return new GcpParamsBuilder();
-        }
-
-        public GcpParamsBuilder withNetworkId(String networkId) {
+        public Builder withNetworkId(String networkId) {
             this.networkId = networkId;
             return this;
         }
 
-        public GcpParamsBuilder withSharedProjectId(String sharedProjectId) {
+        public Builder withSharedProjectId(String sharedProjectId) {
             this.sharedProjectId = sharedProjectId;
             return this;
         }
 
-        public GcpParamsBuilder withNoPublicIp(Boolean noPublicIp) {
+        public Builder withNoPublicIp(Boolean noPublicIp) {
             this.noPublicIp = noPublicIp;
             return this;
         }
 
-        public GcpParamsBuilder withNoFirewallRules(Boolean noFirewallRules) {
+        public Builder withNoFirewallRules(Boolean noFirewallRules) {
             this.noFirewallRules = noFirewallRules;
             return this;
         }

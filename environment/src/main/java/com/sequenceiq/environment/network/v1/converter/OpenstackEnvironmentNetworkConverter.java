@@ -93,7 +93,7 @@ public class OpenstackEnvironmentNetworkConverter extends EnvironmentBaseNetwork
     @Override
     NetworkDto setProviderSpecificFields(NetworkDto.Builder builder, BaseNetwork network) {
         OpenstackNetwork openstackNetwork = (OpenstackNetwork) network;
-        OpenstackParams.OpenstackParamsBuilder openstackParamsBuilder = OpenstackParams.OpenstackParamsBuilder.anOpenstackParams();
+        OpenstackParams.Builder openstackParamsBuilder = OpenstackParams.builder();
         Optional.ofNullable(openstackNetwork.getNetworkId()).ifPresent(openstackParamsBuilder::withNetworkId);
         Optional.ofNullable(openstackNetwork.getNetworkingOption()).ifPresent(openstackParamsBuilder::withNetworkingOption);
         Optional.ofNullable(openstackNetwork.getPublicNetId()).ifPresent(openstackParamsBuilder::withPublicNetId);
