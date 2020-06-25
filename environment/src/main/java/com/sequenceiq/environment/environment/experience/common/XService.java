@@ -36,7 +36,7 @@ public class XService implements Experience {
 
     private final String pathPostfix;
 
-    public XService(@Value("${xp.protocol:https}") String experienceProtocol, @Value("${xp.path.postfix}") String pathPostfix,
+    public XService(@Value("${experience.scan.protocol}") String experienceProtocol, @Value("${experience.scan.path.postfix}") String pathPostfix,
                     CommonExperienceConnectorService experienceConnectorService, XPServices experienceProvider, CommonExperienceValidator experienceValidator) {
         this.experienceValidator = experienceValidator;
         this.configuredExperiences = identifyConfiguredExperiences(experienceProvider);
@@ -48,7 +48,8 @@ public class XService implements Experience {
     }
 
     @Override
-    public boolean hasExistingClusterForEnvironment(Environment environment) {
+    public boolean hasExistingClusterForEnvironment(Environment environment, String tenant) {
+        LOGGER.debug("About to find connected experiences for environment which is in the following tenant: " + tenant);
         Set<String> activeExperienceNames = environmentHasActiveExperience(environment.getResourceCrn());
         if (activeExperienceNames.size() > 0) {
             String combinedNames = String.join(",", activeExperienceNames);
@@ -73,7 +74,7 @@ public class XService implements Experience {
         affectedExperiences = configuredExperiences
                 .entrySet()
                 .stream()
-                .filter(this::isExperienceConfigured)
+                .filter(this::isExperienceConfigured) // todo szükségtelen
                 .map(xp -> isExperienceActiveForEnvironment(xp.getKey(), xp.getValue(), environmentCrn))
                 .filter(Optional::isPresent)
                 .map(Optional::get)

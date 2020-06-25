@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@ConfigurationProperties("xpservices")
+@ConfigurationProperties("experience.scan.xpservices")
 public class XPServices {
 
     private Map<String, CommonExperience> experiences = new HashMap<>();

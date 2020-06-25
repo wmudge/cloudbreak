@@ -73,11 +73,11 @@ public class EnvironmentDeletionService {
         validateDeletion(environment);
         LOGGER.debug("Deleting environment with name: {}", environment.getName());
         environmentJobService.unschedule(environment);
+        checkIsEnvironmentDeletable(environment);
         if (cascading) {
             reactorFlowManager.triggerCascadingDeleteFlow(environment, userCrn, forced);
         } else {
             if (!forced) {
-                checkIsEnvironmentDeletable(environment);
             }
             reactorFlowManager.triggerDeleteFlow(environment, userCrn, forced);
         }
@@ -132,10 +132,14 @@ public class EnvironmentDeletionService {
 
         long amountOfConnectedExperiences = environmentResourceDeletionService.getConnectedExperienceAmount(env);
         if (amountOfConnectedExperiences > 0) {
-            throw new BadRequestException("The given environment has " + amountOfConnectedExperiences + " connected experiences. " +
-                    "These must be terminated before Environment deletion.");
+            if (amountOfConnectedExperiences == 1) {
+                throw new BadRequestException("The given environment has 1 connected experience. " +
+                        "This must be terminated before Environment deletion.");
+            } else {
+                throw new BadRequestException("The given environment has " + amountOfConnectedExperiences + " connected experiences. " +
+                        "These must be terminated before Environment deletion.");
+            }
         }
-
     }
 
     void validateDeletion(Environment environment) {
@@ -145,4 +149,5 @@ public class EnvironmentDeletionService {
                     String.join(", ", childEnvNames)));
         }
     }
+
 }

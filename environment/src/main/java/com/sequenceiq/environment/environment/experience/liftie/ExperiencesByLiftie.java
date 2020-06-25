@@ -19,15 +19,16 @@ public class ExperiencesByLiftie implements Experience {
     }
 
     @Override
-    public boolean hasExistingClusterForEnvironment(Environment environment) {
-        String tenant = "9d74eee4-1cad-45d7-b645-7ccf9edbb73d"; //todo: find a way to figure out the tenant of the given env
+    public boolean hasExistingClusterForEnvironment(Environment environment, String tenant) {
+        //String tenant = "9d74eee4-1cad-45d7-b645-7ccf9edbb73d"; //todo: find a way to figure out the tenant of the given env
         List<ClusterView> clusterViews = getClusterViews(environment.getName(), tenant);
         return countNotDeletedClusters(clusterViews) > 0;
     }
 
     private List<ClusterView> getClusterViews(String environmentName, String tenant) {
         List<ClusterView> clusterViews = new LinkedList<>();
-        ListClustersResponse first = liftieApi.listClusters(environmentName, tenant, "mon-platform", null);
+        //ListClustersResponse first = liftieApi.listClusters(environmentName, tenant, "mon-platform", null);
+        ListClustersResponse first = liftieApi.listClusters(environmentName, tenant, null, null);
         if (first.getPage().getTotalPages() > 1) {
             List<ListClustersResponse> clustersResponses = new LinkedList<>();
             clustersResponses.add(first);

@@ -34,7 +34,7 @@ public class CommonExperienceConnectorService {
 
     private final Client client;
 
-    public CommonExperienceConnectorService(@Value("${xp.path.componentToReplace}") String componentToReplaceInPath, Client client) {
+    public CommonExperienceConnectorService(@Value("${experience.scan.path.componentToReplace}") String componentToReplaceInPath, Client client) {
         this.client = client;
         throwIfTrue(isEmpty(componentToReplaceInPath),
                 () -> new IllegalArgumentException("Component what should be replaced in experience path must not be empty or null."));

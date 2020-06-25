@@ -178,15 +178,9 @@ experience:
       api:
         port: 9999
         address: localhost
-    dwx:
-      api:
-        port: 9001
-        address: 127.0.0.1
-        protocol: http
-    xp:
-      path:
-        componentToReplace: "{crn}"
-        postfix: "/cp-internal/environment/{crn}"
+    path:
+      componentToReplace: "{crn}"
+      postfix: "/cp-internal/environment/{crn}"
     xpservices:
       experiences[Machine Learning Experience].pathPrefix: ${MLX_PATH_PREFIX}
       experiences[Machine Learning Experience].pathInfix: ${MLX_PATH_INFIX}
