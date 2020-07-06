@@ -1,6 +1,7 @@
 package com.sequenceiq.it.cloudbreak.util.aws;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -61,5 +62,10 @@ public class AwsCloudFunctionality implements CloudFunctionality {
     @Override
     public void cloudStorageDeleteContainer(String baseLocation) {
         amazonS3Util.deleteNonVersionedBucket(baseLocation);
+    }
+
+    @Override
+    public Map<String, Boolean> enaSupport(List<String> instanceIds) {
+        return amazonEC2Util.enaSupport(instanceIds);
     }
 }

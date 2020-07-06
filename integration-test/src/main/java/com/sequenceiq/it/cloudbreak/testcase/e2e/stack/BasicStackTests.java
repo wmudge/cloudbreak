@@ -16,6 +16,7 @@ import com.sequenceiq.it.cloudbreak.dto.ClouderaManagerTestDto;
 import com.sequenceiq.it.cloudbreak.dto.ClusterTestDto;
 import com.sequenceiq.it.cloudbreak.dto.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.testcase.e2e.AbstractE2ETest;
+import com.sequenceiq.it.cloudbreak.util.ssh.action.SshEnaDriverCheckActions;
 
 /*
  * This test is used by the pull request builder, when the 'aws_e2e_test' label is applied
@@ -25,12 +26,16 @@ public class BasicStackTests extends AbstractE2ETest {
     @Inject
     private StackTestClient stackTestClient;
 
+    @Inject
+    private SshEnaDriverCheckActions sshEnaDriverCheckActions;
+
     @Override
     protected void setupTest(TestContext testContext) {
         createDefaultUser(testContext);
         createDefaultCredential(testContext);
         createEnvironmentWithNetworkAndFreeIpa(testContext);
         initializeDefaultBlueprints(testContext);
+        createDatalake(testContext);
     }
 
     @Test(dataProvider = TEST_CONTEXT)
@@ -56,6 +61,10 @@ public class BasicStackTests extends AbstractE2ETest {
                 .withCluster(cmcluster)
                 .when(stackTestClient.createV4(), key(stack))
                 .await(STACK_AVAILABLE, key(stack))
+                .then((tc, testDto, client) -> {
+                    sshEnaDriverCheckActions.checkEnaDriverOnAws(testDto.getResponse(), client);
+                    return testDto;
+                })
                 .when(stackTestClient.scalePostV4()
                         .withGroup(groupToScale)
                         .withDesiredCount(upscaleCount), key(stack))

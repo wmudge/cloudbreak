@@ -1,6 +1,7 @@
 package com.sequenceiq.it.cloudbreak.util;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CloudFunctionality {
     List<String> listInstanceVolumeIds(List<String> instanceIds);
@@ -19,4 +20,5 @@ public interface CloudFunctionality {
 
     void cloudStorageDeleteContainer(String baseLocation);
 
+    Map<String, Boolean> enaSupport(List<String> instanceIds);
 }
