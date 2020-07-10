@@ -2,6 +2,8 @@ package com.sequenceiq.datalake.service.sdx;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +26,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.StackV4Response
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.cluster.ClusterV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.cluster.clouderamanager.ClouderaManagerProductV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.cluster.clouderamanager.ClouderaManagerV4Response;
+import com.sequenceiq.cloudbreak.auth.altus.Crn;
 import com.sequenceiq.datalake.entity.SdxCluster;
 import com.sequenceiq.datalake.repository.SdxClusterRepository;
 import com.sequenceiq.sdx.api.model.SdxClusterShape;
@@ -57,7 +60,8 @@ public class SdxUpgradeServiceTest {
     @DisplayName("Test if the runtime is properly updated")
     public void testUpdateRuntimeVersionFromCloudbreak() {
         when(sdxService.getById(1L)).thenReturn(sdxCluster);
-        when(stackV4Endpoint.get(0L, "test-sdx-cluster", Set.of())).thenReturn(getStackV4Response());
+        when(stackV4Endpoint.get(eq(0L), eq("test-sdx-cluster"), eq(Set.of()), anyString()))
+                .thenReturn(getStackV4Response());
 
         underTest.updateRuntimeVersionFromCloudbreak(1L);
 
@@ -74,7 +78,8 @@ public class SdxUpgradeServiceTest {
         spark3.setName("SPARK3");
         spark3.setVersion("3.0.0.2.99.7110.0-18-1.p0.3525631");
         stackV4Response.getCluster().getCm().setProducts(List.of(spark3));
-        when(stackV4Endpoint.get(0L, "test-sdx-cluster", Set.of())).thenReturn(stackV4Response);
+        when(stackV4Endpoint.get(eq(0L), eq("test-sdx-cluster"), eq(Set.of()), anyString()))
+                .thenReturn(stackV4Response);
 
         underTest.updateRuntimeVersionFromCloudbreak(1L);
 
@@ -87,7 +92,8 @@ public class SdxUpgradeServiceTest {
         when(sdxService.getById(1L)).thenReturn(sdxCluster);
         StackV4Response stackV4Response = getStackV4Response();
         stackV4Response.getCluster().setCm(null);
-        when(stackV4Endpoint.get(0L, "test-sdx-cluster", Set.of())).thenReturn(stackV4Response);
+        when(stackV4Endpoint.get(eq(0L), eq("test-sdx-cluster"), eq(Set.of()), anyString()))
+                .thenReturn(stackV4Response);
 
         underTest.updateRuntimeVersionFromCloudbreak(1L);
 
@@ -100,7 +106,8 @@ public class SdxUpgradeServiceTest {
         when(sdxService.getById(1L)).thenReturn(sdxCluster);
         StackV4Response stackV4Response = getStackV4Response();
         stackV4Response.setCluster(null);
-        when(stackV4Endpoint.get(0L, "test-sdx-cluster", Set.of())).thenReturn(stackV4Response);
+        when(stackV4Endpoint.get(eq(0L), eq("test-sdx-cluster"), eq(Set.of()), anyString()))
+                .thenReturn(stackV4Response);
 
         underTest.updateRuntimeVersionFromCloudbreak(1L);
 
@@ -115,7 +122,8 @@ public class SdxUpgradeServiceTest {
         ClouderaManagerProductV4Response cdp = new ClouderaManagerProductV4Response();
         cdp.setName("CDH");
         stackV4Response.getCluster().getCm().setProducts(List.of(cdp));
-        when(stackV4Endpoint.get(0L, "test-sdx-cluster", Set.of())).thenReturn(stackV4Response);
+        when(stackV4Endpoint.get(eq(0L), eq("test-sdx-cluster"), eq(Set.of()), anyString()))
+                .thenReturn(stackV4Response);
 
         underTest.updateRuntimeVersionFromCloudbreak(1L);
 
@@ -156,6 +164,12 @@ public class SdxUpgradeServiceTest {
         sdxCluster.setCrn("crn:sdxcluster");
         sdxCluster.setRuntime("7.2.0");
         sdxCluster.setId(1L);
+        sdxCluster.setCrn(Crn.builder().setAccountId("asd")
+                .setResource("asd")
+                .setResourceType(Crn.ResourceType.DATALAKE)
+                .setService(Crn.Service.DATALAKE)
+                .setPartition(Crn.Partition.CDP)
+                .build().toString());
         return sdxCluster;
     }
 }
