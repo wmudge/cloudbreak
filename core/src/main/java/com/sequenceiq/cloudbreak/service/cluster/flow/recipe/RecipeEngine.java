@@ -1,6 +1,7 @@
 package com.sequenceiq.cloudbreak.service.cluster.flow.recipe;
 
 import static com.sequenceiq.cloudbreak.common.model.recipe.RecipeType.POST_CLOUDERA_MANAGER_START;
+import static com.sequenceiq.cloudbreak.common.model.recipe.RecipeType.POST_CLUSTER_INSTALL;
 import static com.sequenceiq.cloudbreak.common.model.recipe.RecipeType.PRE_CLOUDERA_MANAGER_START;
 import static com.sequenceiq.cloudbreak.common.model.recipe.RecipeType.PRE_TERMINATION;
 
@@ -56,16 +57,16 @@ public class RecipeEngine {
         }
     }
 
-    // note: executed when LDAP config is present, because later the LDAP sync is hooked for this salt state in the top.sls.
     public void executePostAmbariStartRecipes(Stack stack, Collection<Recipe> recipes) throws CloudbreakException {
-        if ((stack.getCluster() != null && ldapConfigService.isLdapConfigExistsForEnvironment(stack.getEnvironmentCrn(), stack.getName()))
-                || recipesFound(recipes, POST_CLOUDERA_MANAGER_START)) {
+        if (shouldExecuteRecipeOnStack(recipes, POST_CLOUDERA_MANAGER_START)) {
             orchestratorRecipeExecutor.postClusterManagerStartRecipes(stack);
         }
     }
 
-    public void executePostInstallRecipes(Stack stack) throws CloudbreakException {
-        orchestratorRecipeExecutor.postClusterInstall(stack);
+    public void executePostInstallRecipes(Stack stack, Collection<Recipe> recipes) throws CloudbreakException {
+        if (shouldExecuteRecipeOnStack(recipes, POST_CLUSTER_INSTALL)) {
+            orchestratorRecipeExecutor.postClusterInstall(stack);
+        }
     }
 
     public void executePreTerminationRecipes(Stack stack, Collection<Recipe> recipes, boolean forced) throws CloudbreakException {

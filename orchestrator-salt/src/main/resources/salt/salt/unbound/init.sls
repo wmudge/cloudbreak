@@ -24,10 +24,9 @@
       private_address: {{ host.private_address }}
 
 include_access_config:
-  file.replace:
-    - name: /etc/unbound/unbound.conf
-    - pattern: '#include: "otherfile.conf"'
-    - repl: 'include: "/etc/unbound/access.conf"'
+# file.replace tends to take 5 seconds when run for the first time due to tons of modules being loaded in salt 3000.2. Hence a sed.
+  cmd.run:
+    - name: "sed -i 's/#include: \"otherfile\\.conf\"/include: \\\"\\/etc\\/unbound\\/access.conf\\\"/g' /etc/unbound/unbound.conf"
     - unless: grep "/etc/unbound/access.conf" /etc/unbound/unbound.conf
 
 /etc/unbound/access.conf:

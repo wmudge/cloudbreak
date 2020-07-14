@@ -2,6 +2,7 @@
 {%- from 'cloudera/manager/settings.sls' import cloudera_manager with context %}
 {%- set manager_server_fqdn = salt['pillar.get']('hosts')[metadata.server_address]['fqdn'] %}
 
+{%- if not "prewarmed_v1" in grains.get('roles', []) -%}
 install-cloudera-manager-agent:
   pkg.installed:
     - failhard: True
@@ -10,12 +11,15 @@ install-cloudera-manager-agent:
       - cloudera-manager-agent
     - unless:
       - rpm -q cloudera-manager-daemons cloudera-manager-agent
+{%- endif %}
 
+{%- if not "prewarmed_v1" in grains.get('roles', []) -%}
 {%- if not salt['pkg.version']('python-psycopg2') and not salt['pkg.version']('python2-psycopg2') %}
 install-psycopg2:
   cmd.run:
     - name: pip install psycopg2==2.7.5 --ignore-installed
     - unless: pip list --no-index | grep -E 'psycopg2.*2.7.5'
+{%- endif %}
 {%- endif %}
 
 replace_server_host:

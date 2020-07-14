@@ -114,7 +114,8 @@ public class ClusterUpscaleService {
     public void executePostRecipesOnNewHosts(Long stackId) throws CloudbreakException {
         Stack stack = stackService.getByIdWithListsInTransaction(stackId);
         LOGGER.debug("Start executing post recipes");
-        recipeEngine.executePostInstallRecipes(stack);
+        // TODO: Question for reviewer: stackId vs clusterId - Is this usage correct?
+        recipeEngine.executePostInstallRecipes(stack, hostGroupService.getRecipesByCluster(stack.getCluster().getId()));
     }
 
     public Map<String, String> gatherInstalledComponents(Long stackId, String hostname) {

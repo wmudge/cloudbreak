@@ -1,4 +1,6 @@
 {% set fluent = {} %}
+{# Note: fluent_prewarm_role should be changed here as well as in the cloudbreak-images repo if there are changes to the version of fluent, or other changes which affect the prewarmed behaviour #}
+{% set fluent_prewarm_role = 'fluent_prewarmed_v1' %}
 {% if salt['pillar.get']('fluent:enabled') %}
     {% set fluent_enabled = True %}
 {% else %}
@@ -142,6 +144,7 @@
 
 {% do fluent.update({
     "enabled": fluent_enabled,
+    "fluent_prewarm_role":  fluent_prewarm_role,
     "is_systemd" : is_systemd,
     "serverLogFolderPrefix": server_log_folder_prefix,
     "agentLogFolderPrefix": agent_log_folder_prefix,

@@ -45,7 +45,7 @@ public class FreeIpaCleanupService {
 
     private static final String ROLE_NAME_PREFIX = "hadoopadminrole-";
 
-    private static final int POLL_INTERVAL = 5000;
+    private static final int POLL_INTERVAL = 2000;
 
     private static final int WAIT_SEC = 600;
 

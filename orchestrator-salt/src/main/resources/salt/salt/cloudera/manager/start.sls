@@ -12,7 +12,9 @@ start_server:
   service.running:
     - enable: True
     - name: cloudera-scm-server
+{%- if not "prewarmed_v1" in grains.get('roles', []) -%}
 {% if "ipa_member" in grains.get('roles', []) %}
     - require:
         - pkg: ipa_packages_install
+{% endif %}
 {% endif %}

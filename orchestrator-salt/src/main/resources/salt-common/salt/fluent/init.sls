@@ -4,7 +4,7 @@
 {% set dbus_lock_exists = salt['file.file_exists' ]('/etc/td-agent/databus_bundle.lock') %}
 
 {% if fluent.enabled %}
-
+{% if not fluent.fluent_prewarm_role in grains.get('roles', []) %}
 {% if not salt['file.directory_exists' ]('/etc/td-agent') %}
 {% if os == "RedHat" or os == "CentOS" %}
 install_fluentd_yum:
@@ -60,6 +60,7 @@ install_fluentd_amazon1:
 warning_fluentd_os:
   cmd.run:
     - name: echo "Warning - Fluentd install is not supported for this OS type ({{ os }})"
+{# End of check for OS type #}
 {% endif %}
 install_fluentd_plugins:
   cmd.run:
@@ -73,6 +74,9 @@ install_fluentd_plugins:
       - /opt/td-agent/embedded/bin/fluent-gem install fluent-plugin-azurestorage-gen2 -v {{ fluent.clouderaAzureGen2PluginVersion }}
       {% endif %}
     - onlyif: test -d /opt/td-agent/embedded/bin/
+{# end of check for /etc/td-agent existence #}
+{% endif %}
+{# End of check for prewarmed #}
 {% endif %}
 
 /etc/td-agent/pos:
@@ -86,6 +90,7 @@ install_fluentd_plugins:
       - group
       - mode
 
+{% if not fluent.fluent_prewarm_role in grains.get('roles', []) %}
 /etc/td-agent/check_fluent_plugins.sh:
    file.managed:
     - source: salt://fluent/template/check_fluent_plugins.sh.j2
@@ -101,6 +106,8 @@ install_fluentd_plugins:
 check_fluentd_plugins:
    cmd.run:
     - name: sh /etc/td-agent/check_fluent_plugins.sh
+{# End of check for prewarmed #}
+{% endif %}
 
 {%- if fluent.is_systemd %}
 fluent_systemd_stop:

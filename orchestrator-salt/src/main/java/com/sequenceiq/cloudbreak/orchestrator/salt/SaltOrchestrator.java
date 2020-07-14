@@ -211,7 +211,7 @@ public class SaltOrchestrator implements HostOrchestrator {
 
             StateAllRunner stateAllRunner = new StateAllRunner(gatewayTargetIpAddresses, allNodes, "disks.format-and-mount");
             OrchestratorBootstrap saltJobIdTracker = new SaltJobIdTracker(sc, stateAllRunner);
-            Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitModel);
+            Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitModel, 1000);
             saltJobRunBootstrapRunner.call();
 
             Map<String, String> uuidResponse = SaltStates.getUuidList(sc);
@@ -347,7 +347,7 @@ public class SaltOrchestrator implements HostOrchestrator {
             // if there is a new salt master then re-bootstrap all nodes
             Set<Node> nodes = gatewayTargets.isEmpty() ? targets : allNodes;
             OrchestratorBootstrap saltBootstrap = new SaltBootstrap(sc, allGatewayConfigs, nodes, params);
-            Callable<Boolean> saltBootstrapRunner = saltRunner.runner(saltBootstrap, exitCriteria, exitModel);
+            Callable<Boolean> saltBootstrapRunner = saltRunner.runner(saltBootstrap, exitCriteria, exitModel, 1000);
             saltBootstrapRunner.call();
         } catch (Exception e) {
             LOGGER.info("Error occurred during salt upscale", e);
@@ -994,7 +994,7 @@ public class SaltOrchestrator implements HostOrchestrator {
     private void runNewService(SaltConnector sc, BaseSaltJobRunner baseSaltJobRunner, ExitCriteriaModel exitCriteriaModel, int maxRetry, boolean retryOnFail)
             throws Exception {
         OrchestratorBootstrap saltJobIdTracker = new SaltJobIdTracker(sc, baseSaltJobRunner, retryOnFail);
-        Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitCriteriaModel, maxRetry, true);
+        Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitCriteriaModel, maxRetry, true, 4000);
         saltJobRunBootstrapRunner.call();
     }
 
@@ -1016,7 +1016,7 @@ public class SaltOrchestrator implements HostOrchestrator {
                 // Skip highstate and just execute other recipes for performace.
                 StateAllRunner stateAllRunner = new StateAllRunner(targetHostnames, allNodes, "recipes." + phase.value());
                 OrchestratorBootstrap saltJobIdTracker = new SaltJobIdTracker(sc, stateAllRunner);
-                Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitCriteriaModel, maxRetry, false);
+                Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitCriteriaModel, maxRetry, false, 3000);
                 saltJobRunBootstrapRunner.call();
             }
         } catch (CloudbreakOrchestratorTimeoutException e) {
@@ -1087,7 +1087,7 @@ public class SaltOrchestrator implements HostOrchestrator {
             String path, String fileName, byte[] content) throws CloudbreakOrchestratorFailedException {
         try {
             OrchestratorBootstrap saltUpload = new SaltUpload(saltConnector, targets, path, fileName, content);
-            Callable<Boolean> saltUploadRunner = saltRunner.runner(saltUpload, exitCriteria, exitCriteriaModel);
+            Callable<Boolean> saltUploadRunner = saltRunner.runner(saltUpload, exitCriteria, exitCriteriaModel, 2000);
             saltUploadRunner.call();
         } catch (Exception e) {
             LOGGER.info("Error occurred during file distribute to gateway nodes", e);

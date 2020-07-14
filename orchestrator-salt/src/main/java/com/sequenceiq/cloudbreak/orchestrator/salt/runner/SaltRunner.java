@@ -14,7 +14,7 @@ import com.sequenceiq.cloudbreak.orchestrator.state.ExitCriteriaModel;
 @Component
 public class SaltRunner {
 
-    private static final int SLEEP_TIME = 10000;
+    private static final int SLEEP_TIME = 5000;
 
     @Value("${cb.max.salt.new.service.retry.onerror}")
     private int maxRetryOnError;
@@ -24,11 +24,20 @@ public class SaltRunner {
 
     public Callable<Boolean> runner(OrchestratorBootstrap bootstrap, ExitCriteria exitCriteria, ExitCriteriaModel exitCriteriaModel, int maxRetry,
             boolean usingErrorCount) {
-        return new OrchestratorBootstrapRunner(bootstrap, exitCriteria, exitCriteriaModel, MDC.getCopyOfContextMap(), maxRetry, SLEEP_TIME,
-                usingErrorCount ? maxRetryOnError : maxRetry);
+        return runner(bootstrap, exitCriteria, exitCriteriaModel, maxRetry, usingErrorCount, SLEEP_TIME);
     }
 
     public Callable<Boolean> runner(OrchestratorBootstrap bootstrap, ExitCriteria exitCriteria, ExitCriteriaModel exitCriteriaModel) {
         return runner(bootstrap, exitCriteria, exitCriteriaModel, maxRetry, false);
+    }
+
+    public Callable<Boolean> runner(OrchestratorBootstrap bootstrap, ExitCriteria exitCriteria, ExitCriteriaModel exitCriteriaModel, int sleepTime) {
+        return runner(bootstrap, exitCriteria, exitCriteriaModel, maxRetry, false, sleepTime);
+    }
+
+    public Callable<Boolean> runner(OrchestratorBootstrap bootstrap, ExitCriteria exitCriteria, ExitCriteriaModel exitCriteriaModel, int maxRetry,
+            boolean usingErrorCount, int sleepTime) {
+        return new OrchestratorBootstrapRunner(bootstrap, exitCriteria, exitCriteriaModel, MDC.getCopyOfContextMap(), maxRetry, sleepTime,
+                usingErrorCount ? maxRetryOnError : maxRetry);
     }
 }
