@@ -64,7 +64,6 @@ function check_and_install_plugin() {
 }
 
 function main() {
-{% if not fluent.fluent_prewarm_role in grains.get('roles', []) %}
   {% if fluent.platform == 'AZURE' %}
   check_and_install_plugin "fluent-plugin-azurestorage" "true" "{{ fluent.clouderaAzurePluginVersion }}"
   check_and_install_plugin "fluent-plugin-azurestorage-gen2" "false" "{{ fluent.clouderaAzureGen2PluginVersion }}"
@@ -72,9 +71,6 @@ function main() {
   check_and_install_plugin "fluent-plugin-redaction" "false" "{{ fluent.redactionPluginVersion }}"
   check_and_install_plugin "fluent-plugin-detect-exceptions" "false" ""
   check_and_install_plugin "fluent-plugin-databus" "true" "{{ fluent.clouderaDatabusPluginVersion }}"
-{% else %}
-  exit 0
-{% endif %}
 }
 
 main ${1+"$@"}

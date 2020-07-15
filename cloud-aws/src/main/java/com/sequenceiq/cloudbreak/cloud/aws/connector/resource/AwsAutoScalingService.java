@@ -47,7 +47,7 @@ public class AwsAutoScalingService {
 
     private static final int MAX_INSTANCE_ID_SIZE = 100;
 
-    private static final int EXPECTED_SCALEUP_TIME_MIN_SECONDS = 40;
+    private static final int EXPECTED_SCALEUP_TIME_SECONDS = 40;
 
     @Inject
     private CloudFormationStackUtil cfStackUtil;
@@ -114,7 +114,8 @@ public class AwsAutoScalingService {
         String autoScalingGroupName, Integer requiredInstanceCount, Long stackId) throws AmazonAutoscalingFailed {
         Waiter<DescribeAutoScalingGroupsRequest> groupInServiceWaiter = asClient.waiters().groupInService();
         PollingStrategy backoff = getBackoffCancellablePollingStrategy(new StackCancellationCheck(stackId));
-        PollingStrategy slowStart = SlowStartCancellablePollingStrategy.getExpectedRuntimeCancellablePollingStrategy(new StackCancellationCheck(stackId), EXPECTED_SCALEUP_TIME_MIN_SECONDS);
+        PollingStrategy slowStart = SlowStartCancellablePollingStrategy.getExpectedRuntimeCancellablePollingStrategy(
+                new StackCancellationCheck(stackId), EXPECTED_SCALEUP_TIME_SECONDS);
         try {
             groupInServiceWaiter.run(new WaiterParameters<>(new DescribeAutoScalingGroupsRequest().withAutoScalingGroupNames(autoScalingGroupName))
                     .withPollingStrategy(backoff));
@@ -131,7 +132,7 @@ public class AwsAutoScalingService {
         } catch (Exception e) {
             throw new AmazonAutoscalingFailed(e.getMessage(), e);
         }
-        LOGGER.info("Done with instancesInServiceWaiter. Duration={}", (System.currentTimeMillis() - startTime));
+        LOGGER.info("Done with instancesInServiceWaiter. Duration={}", System.currentTimeMillis() - startTime);
 
         List<String> instanceIds = cloudFormationStackUtil.getInstanceIds(asRetryClient, autoScalingGroupName);
         if (requiredInstanceCount != 0) {

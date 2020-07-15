@@ -21,7 +21,7 @@ import reactor.bus.EventBus;
 @Component
 public class UpscaleClusterHandler implements EventHandler<UpscaleClusterRequest> {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(UpscaleClusterHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpscaleClusterHandler.class);
 
     @Inject
     private EventBus eventBus;

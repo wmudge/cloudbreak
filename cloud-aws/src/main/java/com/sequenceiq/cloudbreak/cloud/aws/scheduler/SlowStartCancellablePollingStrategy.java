@@ -10,6 +10,7 @@ public class SlowStartCancellablePollingStrategy {
     }
 
     public static PollingStrategy getExpectedRuntimeCancellablePollingStrategy(CancellationCheck cancellationCheck, int expectedRuntimeSeconds) {
-        return new PollingStrategy(new MaxAttempCancellablePetryStrategy(DEFAULT_MAX_ATTEMPTS, cancellationCheck), new SlowStartDelayStrategy(expectedRuntimeSeconds));
+        return new PollingStrategy(new MaxAttempCancellablePetryStrategy(DEFAULT_MAX_ATTEMPTS, cancellationCheck),
+                new SlowStartDelayStrategy(expectedRuntimeSeconds));
     }
 }

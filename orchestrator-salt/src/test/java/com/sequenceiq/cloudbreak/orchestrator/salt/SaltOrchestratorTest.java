@@ -122,6 +122,10 @@ public class SaltOrchestratorTest {
         when(saltRunner.runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class))).thenReturn(callable);
         when(saltRunner.runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class), anyInt(), anyBoolean()))
                 .thenReturn(callable);
+        when(saltRunner.runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class), anyInt()))
+                .thenReturn(callable);
+        when(saltRunner.runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class), anyInt(), anyBoolean(), anyInt()))
+                .thenReturn(callable);
     }
 
     @Test
@@ -136,7 +140,9 @@ public class SaltOrchestratorTest {
 
         saltOrchestrator.bootstrap(Collections.singletonList(gatewayConfig), targets, bootstrapParams, exitCriteriaModel);
 
-        verify(saltRunner, times(4)).runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class));
+        verify(saltRunner, times(3)).runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class), anyInt());
+        // This call is for saltBootstrap which uses the default timeout.
+        verify(saltRunner, times(1)).runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class));
         // salt.zip, master_sign.pem, master_sign.pub
         verifyNew(SaltBootstrap.class, times(1)).withArguments(eq(saltConnector), eq(Collections.singletonList(gatewayConfig)), eq(targets),
                 eq(bootstrapParams));
@@ -153,7 +159,7 @@ public class SaltOrchestratorTest {
         saltOrchestrator.init(exitCriteria);
         saltOrchestrator.bootstrapNewNodes(Collections.singletonList(gatewayConfig), targets, targets, null, bootstrapParams, exitCriteriaModel);
 
-        verify(saltRunner, times(2)).runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class));
+        verify(saltRunner, times(2)).runner(any(OrchestratorBootstrap.class), any(ExitCriteria.class), any(ExitCriteriaModel.class), anyInt());
         verifyNew(SaltBootstrap.class, times(1)).withArguments(eq(saltConnector),
                 eq(Collections.singletonList(gatewayConfig)), eq(targets), eq(bootstrapParams));
     }

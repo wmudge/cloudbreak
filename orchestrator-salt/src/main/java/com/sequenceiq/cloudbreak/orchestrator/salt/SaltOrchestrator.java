@@ -89,6 +89,14 @@ public class SaltOrchestrator implements HostOrchestrator {
 
     private static final int SLEEP_TIME = 10000;
 
+    private static final int SLEEP_TIME_MS_1000 = 1000;
+
+    private static final int SLEEP_TIME_MS_2000 = 2000;
+
+    private static final int SLEEP_TIME_MS_3000 = 3000;
+
+    private static final int SLEEP_TIME_MS_4000 = 4000;
+
     private static final int SLEEP_TIME_IN_SEC = SLEEP_TIME / 1000;
 
     private static final String FREEIPA_MASTER_ROLE = "freeipa_primary";
@@ -211,7 +219,7 @@ public class SaltOrchestrator implements HostOrchestrator {
 
             StateAllRunner stateAllRunner = new StateAllRunner(gatewayTargetIpAddresses, allNodes, "disks.format-and-mount");
             OrchestratorBootstrap saltJobIdTracker = new SaltJobIdTracker(sc, stateAllRunner);
-            Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitModel, 1000);
+            Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitModel, SLEEP_TIME_MS_1000);
             saltJobRunBootstrapRunner.call();
 
             Map<String, String> uuidResponse = SaltStates.getUuidList(sc);
@@ -347,7 +355,7 @@ public class SaltOrchestrator implements HostOrchestrator {
             // if there is a new salt master then re-bootstrap all nodes
             Set<Node> nodes = gatewayTargets.isEmpty() ? targets : allNodes;
             OrchestratorBootstrap saltBootstrap = new SaltBootstrap(sc, allGatewayConfigs, nodes, params);
-            Callable<Boolean> saltBootstrapRunner = saltRunner.runner(saltBootstrap, exitCriteria, exitModel, 1000);
+            Callable<Boolean> saltBootstrapRunner = saltRunner.runner(saltBootstrap, exitCriteria, exitModel, SLEEP_TIME_MS_1000);
             saltBootstrapRunner.call();
         } catch (Exception e) {
             LOGGER.info("Error occurred during salt upscale", e);
@@ -994,7 +1002,7 @@ public class SaltOrchestrator implements HostOrchestrator {
     private void runNewService(SaltConnector sc, BaseSaltJobRunner baseSaltJobRunner, ExitCriteriaModel exitCriteriaModel, int maxRetry, boolean retryOnFail)
             throws Exception {
         OrchestratorBootstrap saltJobIdTracker = new SaltJobIdTracker(sc, baseSaltJobRunner, retryOnFail);
-        Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitCriteriaModel, maxRetry, true, 4000);
+        Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitCriteriaModel, maxRetry, true, SLEEP_TIME_MS_4000);
         saltJobRunBootstrapRunner.call();
     }
 
@@ -1016,7 +1024,8 @@ public class SaltOrchestrator implements HostOrchestrator {
                 // Skip highstate and just execute other recipes for performace.
                 StateAllRunner stateAllRunner = new StateAllRunner(targetHostnames, allNodes, "recipes." + phase.value());
                 OrchestratorBootstrap saltJobIdTracker = new SaltJobIdTracker(sc, stateAllRunner);
-                Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(saltJobIdTracker, exitCriteria, exitCriteriaModel, maxRetry, false, 3000);
+                Callable<Boolean> saltJobRunBootstrapRunner = saltRunner.runner(
+                        saltJobIdTracker, exitCriteria, exitCriteriaModel, maxRetry, false, SLEEP_TIME_MS_3000);
                 saltJobRunBootstrapRunner.call();
             }
         } catch (CloudbreakOrchestratorTimeoutException e) {
@@ -1087,7 +1096,7 @@ public class SaltOrchestrator implements HostOrchestrator {
             String path, String fileName, byte[] content) throws CloudbreakOrchestratorFailedException {
         try {
             OrchestratorBootstrap saltUpload = new SaltUpload(saltConnector, targets, path, fileName, content);
-            Callable<Boolean> saltUploadRunner = saltRunner.runner(saltUpload, exitCriteria, exitCriteriaModel, 2000);
+            Callable<Boolean> saltUploadRunner = saltRunner.runner(saltUpload, exitCriteria, exitCriteriaModel, SLEEP_TIME_MS_3000);
             saltUploadRunner.call();
         } catch (Exception e) {
             LOGGER.info("Error occurred during file distribute to gateway nodes", e);

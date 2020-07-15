@@ -154,7 +154,8 @@ public class ClouderaManagerModificationService implements ClusterModificationSe
             LOGGER.warn("Failed to upscale: {}", e.getResponseBody(), e);
             throw new CloudbreakException("Failed to upscale", e);
         } finally {
-            LOGGER.debug("CM upscale request finished for {} hosts in {} ms", hostCount == -1 ? "NA" : hostCount, Duration.between(start, Instant.now()).toMillis());
+            LOGGER.debug("CM upscale request finished for {} hosts in {} ms", hostCount == -1 ? "NA" : hostCount,
+                    Duration.between(start, Instant.now()).toMillis());
         }
     }
 

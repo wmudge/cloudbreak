@@ -16,15 +16,20 @@ import com.amazonaws.waiters.PollingStrategyContext;
 public class SlowStartDelayStrategy implements PollingStrategy.DelayStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SlowStartDelayStrategy.class);
+
     private static final Random RANDOM = ThreadLocalRandom.current();
 
     private static final int MAX_POLLING_INTERVAL_SECONDS = 60;
 
     private static final int STABLE_POLLING_INTERVAL_SECONDS_MAX = 5;
+
     private static final int STABLE_POLLING_INTERVAL_SECONDS_MIN = 1;
 
     private static final double FIRST_POLL_RATIO = 0.75;
+
     private static final double SECOND_POLL_RATIO = 0.2;
+
+    private static final double THOUSAND = 1000.0;
 
     private final int expectedRuntimeSeconds;
 
@@ -42,11 +47,16 @@ public class SlowStartDelayStrategy implements PollingStrategy.DelayStrategy {
 
         Double msToWait;
         if (requestNumber == 0) {
-            msToWait = 1000.0 * Math.min(Math.max(FIRST_POLL_RATIO * expectedRuntimeSeconds, STABLE_POLLING_INTERVAL_SECONDS_MIN), MAX_POLLING_INTERVAL_SECONDS);
+            msToWait = THOUSAND * Math.min(
+                    Math.max(FIRST_POLL_RATIO * expectedRuntimeSeconds, STABLE_POLLING_INTERVAL_SECONDS_MIN),
+                    MAX_POLLING_INTERVAL_SECONDS);
         } else if (requestNumber == 1) {
-            msToWait = 1000.0 * Math.min(Math.max(SECOND_POLL_RATIO * expectedRuntimeSeconds, STABLE_POLLING_INTERVAL_SECONDS_MIN), MAX_POLLING_INTERVAL_SECONDS);
+            msToWait = THOUSAND * Math.min(
+                    Math.max(SECOND_POLL_RATIO * expectedRuntimeSeconds, STABLE_POLLING_INTERVAL_SECONDS_MIN),
+                    MAX_POLLING_INTERVAL_SECONDS);
         } else {
-            msToWait = 1000.0 * Math.max(STABLE_POLLING_INTERVAL_SECONDS_MIN, RANDOM.nextInt(STABLE_POLLING_INTERVAL_SECONDS_MAX));
+            msToWait = THOUSAND * Math.max(STABLE_POLLING_INTERVAL_SECONDS_MIN,
+                    RANDOM.nextInt(STABLE_POLLING_INTERVAL_SECONDS_MAX));
         }
         LOGGER.info("Polling attempt: {}, Sleeping for: {}ms for request: {}. ExpectedRuntime={}s",
                 requestNumber, msToWait.longValue(), pollingStrategyContext.getOriginalRequest(), expectedRuntimeSeconds);

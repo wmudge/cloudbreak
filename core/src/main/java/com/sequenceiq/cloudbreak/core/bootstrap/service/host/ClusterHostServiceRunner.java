@@ -230,6 +230,7 @@ public class ClusterHostServiceRunner {
             throw new CloudbreakServiceException(e.getMessage(), e);
         }
     }
+
     public Map<String, String> addClusterServices(Long stackId, String hostGroupName, Integer scalingAdjustment) {
         Map<String, String> candidates;
         Stack stack = stackService.getByIdWithListsInTransaction(stackId);

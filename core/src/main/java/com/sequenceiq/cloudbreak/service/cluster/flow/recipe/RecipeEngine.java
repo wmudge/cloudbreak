@@ -19,7 +19,6 @@ import com.sequenceiq.cloudbreak.common.model.recipe.RecipeType;
 import com.sequenceiq.cloudbreak.domain.Recipe;
 import com.sequenceiq.cloudbreak.domain.stack.Stack;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.host.HostGroup;
-import com.sequenceiq.cloudbreak.ldap.LdapConfigService;
 import com.sequenceiq.cloudbreak.service.CloudbreakException;
 import com.sequenceiq.common.api.type.InstanceGroupType;
 
@@ -30,9 +29,6 @@ public class RecipeEngine {
 
     @Inject
     private OrchestratorRecipeExecutor orchestratorRecipeExecutor;
-
-    @Inject
-    private LdapConfigService ldapConfigService;
 
     public void uploadRecipes(Stack stack, Set<HostGroup> hostGroups) throws CloudbreakException {
         boolean recipesFound = recipesFound(hostGroups);

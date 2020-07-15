@@ -57,7 +57,8 @@ public class CleanupFreeIpaHandler implements EventHandler<CleanupFreeIpaEvent> 
                     event.getIps(), event.isRecover());
             Event<StackEvent> responseEvent = new Event<>(cleanupFreeIpaEvent.getHeaders(), response);
             eventBus.notify(CLEANUP_FREEIPA_FINISHED_EVENT.event(), responseEvent);
-            LOGGER.debug("CleanupFreeIPA for #hosts={} finished in {}ms", event.getHostNames() == null ? "NA" : event.getHostNames().size(), Duration.between(start, Instant.now()).toMillis());
+            LOGGER.debug("CleanupFreeIPA for #hosts={} finished in {}ms", event.getHostNames() == null ? "NA" : event.getHostNames().size(),
+                    Duration.between(start, Instant.now()).toMillis());
         }
     }
 }
