@@ -1,5 +1,7 @@
 package com.sequenceiq.it.cloudbreak.client;
 
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 
 import com.sequenceiq.it.cloudbreak.EnvironmentClient;
@@ -10,6 +12,7 @@ import com.sequenceiq.it.cloudbreak.action.v4.environment.EnvironmentCreateActio
 import com.sequenceiq.it.cloudbreak.action.v4.environment.EnvironmentDeleteAction;
 import com.sequenceiq.it.cloudbreak.action.v4.environment.EnvironmentDeleteByNameAction;
 import com.sequenceiq.it.cloudbreak.action.v4.environment.EnvironmentChangeAuthenticationAction;
+import com.sequenceiq.it.cloudbreak.action.v4.environment.EnvironmentDeleteMultipleByNamesAction;
 import com.sequenceiq.it.cloudbreak.action.v4.environment.EnvironmentForceDeleteAction;
 import com.sequenceiq.it.cloudbreak.action.v4.environment.EnvironmentGetAction;
 import com.sequenceiq.it.cloudbreak.action.v4.environment.EnvironmentInternalGetAction;
@@ -43,6 +46,14 @@ public class EnvironmentTestClient {
 
     public Action<EnvironmentTestDto, EnvironmentClient> deleteByName() {
         return new EnvironmentDeleteByNameAction();
+    }
+
+    public Action<EnvironmentTestDto, EnvironmentClient> deleteByName(boolean cascading) {
+        return new EnvironmentDeleteByNameAction(cascading);
+    }
+
+    public Action<EnvironmentTestDto, EnvironmentClient> deleteMultipleByNames(String... envNames) {
+        return new EnvironmentDeleteMultipleByNamesAction(Set.of(envNames));
     }
 
     public Action<EnvironmentTestDto, EnvironmentClient> changeCredential() {
