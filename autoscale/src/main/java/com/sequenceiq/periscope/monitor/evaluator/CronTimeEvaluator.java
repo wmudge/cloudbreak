@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -13,19 +14,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.StackV4Response;
 import com.sequenceiq.cloudbreak.logger.MDCBuilder;
 import com.sequenceiq.periscope.api.model.ScalingStatus;
 import com.sequenceiq.periscope.domain.BaseAlert;
 import com.sequenceiq.periscope.domain.Cluster;
+import com.sequenceiq.periscope.domain.ScalingPolicy;
 import com.sequenceiq.periscope.domain.TimeAlert;
+import com.sequenceiq.periscope.model.yarn.YarnScalingServiceV1Response;
 import com.sequenceiq.periscope.monitor.MonitorUpdateRate;
+import com.sequenceiq.periscope.monitor.client.YarnMetricsClient;
 import com.sequenceiq.periscope.monitor.context.ClusterIdEvaluatorContext;
 import com.sequenceiq.periscope.monitor.context.EvaluatorContext;
+import com.sequenceiq.periscope.monitor.evaluator.load.YarnResponseUtils;
 import com.sequenceiq.periscope.monitor.event.ScalingEvent;
+import com.sequenceiq.periscope.monitor.handler.CloudbreakCommunicator;
 import com.sequenceiq.periscope.repository.TimeAlertRepository;
 import com.sequenceiq.periscope.service.ClusterService;
 import com.sequenceiq.periscope.service.DateService;
 import com.sequenceiq.periscope.service.HistoryService;
+import com.sequenceiq.periscope.utils.StackResponseUtils;
 
 @Component("CronTimeEvaluator")
 @Scope("prototype")
@@ -49,6 +57,21 @@ public class CronTimeEvaluator extends EvaluatorExecutor {
 
     @Inject
     private EventPublisher eventPublisher;
+
+    @Inject
+    private CloudbreakCommunicator cloudbreakCommunicator;
+
+    @Inject
+    private YarnMetricsClient yarnMetricsClient;
+
+    @Inject
+    private YarnResponseUtils yarnResponseUtils;
+
+    @Inject
+    private StackResponseUtils stackResponseUtils;
+
+    @Inject
+    private ScalingPolicyTargetCalculator scalingPolicyTargetCalculator;
 
     private long clusterId;
 
@@ -89,7 +112,7 @@ public class CronTimeEvaluator extends EvaluatorExecutor {
         LOGGER.debug("Finished cronTimeEvaluator for cluster {} in {} ms", cluster.getStackCrn(), System.currentTimeMillis() - start);
     }
 
-    private void publishIfNeeded(List<TimeAlert> alerts) {
+    protected void publishIfNeeded(List<TimeAlert> alerts) {
         TimeAlert triggeredAlert = null;
         for (TimeAlert alert : alerts) {
             boolean alertTriggerable = isTrigger(alert);
@@ -115,7 +138,40 @@ public class CronTimeEvaluator extends EvaluatorExecutor {
     }
 
     private void publish(TimeAlert alert) {
-        eventPublisher.publishEvent(new ScalingEvent(alert));
+        ScalingEvent event = new ScalingEvent(alert);
+
+        int hostGroupNodeCount = getHostGroupNodeCount(alert.getCluster(), alert.getScalingPolicy());
+        int desiredNodeCount = scalingPolicyTargetCalculator.getDesiredNodeCount(event, hostGroupNodeCount);
+        int targetNodeCount = desiredNodeCount - hostGroupNodeCount;
+
+        event.setHostGroupNodeCount(hostGroupNodeCount);
+        event.setDesiredHostGroupNodeCount(desiredNodeCount);
+        if (targetNodeCount < 0) {
+            populateDecommissionCandidates(event, alert.getCluster(), alert.getScalingPolicy(), -targetNodeCount);
+        }
+
+        eventPublisher.publishEvent(event);
         LOGGER.debug("Time alert '{}' triggered  for cluster '{}'", alert.getName(), alert.getCluster().getStackCrn());
+    }
+
+    private void populateDecommissionCandidates(ScalingEvent event, Cluster cluster, ScalingPolicy policy, int mandatoryDownScaleCount) {
+        try {
+            StackV4Response stackV4Response = cloudbreakCommunicator.getByCrn(cluster.getStackCrn());
+            YarnScalingServiceV1Response yarnResponse = yarnMetricsClient.getYarnMetricsForCluster(cluster,
+                    stackV4Response, policy.getHostGroup(), Optional.of(mandatoryDownScaleCount));
+            Map<String, String> hostFqdnsToInstanceId = stackResponseUtils.getCloudInstanceIdsForHostGroup(stackV4Response, policy.getHostGroup());
+
+            List<String> decommissionNodes = yarnResponseUtils.getYarnRecommendedDecommissionHostsForHostGroup(cluster.getStackCrn(), yarnResponse,
+                    hostFqdnsToInstanceId, mandatoryDownScaleCount, Optional.of(mandatoryDownScaleCount));
+            event.setDecommissionNodeIds(decommissionNodes);
+        } catch (Exception ex) {
+            LOGGER.error("Error retrieving decommission candidates for  policy '{}', adjustment type '{}', cluster '{}'",
+                    policy.getName(), policy.getAdjustmentType(), cluster.getStackCrn(), ex);
+        }
+    }
+
+    private Integer getHostGroupNodeCount(Cluster cluster, ScalingPolicy policy) {
+        StackV4Response stackV4Response = cloudbreakCommunicator.getByCrn(cluster.getStackCrn());
+        return stackResponseUtils.getNodeCountForHostGroup(stackV4Response, policy.getHostGroup());
     }
 }

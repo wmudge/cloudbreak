@@ -19,7 +19,7 @@ import com.sequenceiq.periscope.domain.TimeAlert;
 import com.sequenceiq.periscope.utils.TimeUtil;
 
 @Service
-public final class DateService {
+public class DateService {
 
     public static final int DAY_OF_WEEK_FIELD = 5;
 
