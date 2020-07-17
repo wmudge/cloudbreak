@@ -358,5 +358,25 @@
     "right": "environments/modifyAuditCredential",
     "resourceType": "AUDIT_CREDENTIAL",
     "legacyRight": "environments/write"
+  },
+  "LIST_SHARED_RESOURCES": {
+    "right": "environments/listSharedResources",
+    "legacyRight": "environments/read"
+  },
+  "LIST_DATALAKES": {
+    "right": "datalake/listDatalakes",
+    "legacyRight": "datalake/read"
+  },
+  "LIST_DATAHUBS": {
+    "right": "datahub/listDatahubs",
+    "legacyRight": "datahub/read"
+  },
+  "LIST_DATABASES": {
+    "right": "environments/listDatabases",
+    "legacyRight": "environments/read"
+  },
+  "LIST_ENVIRONMENTS": {
+    "right": "environments/listCdpEnvironments",
+    "legacyRight": "environments/read"
   }
 }

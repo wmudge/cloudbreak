@@ -20,7 +20,6 @@ import com.sequenceiq.authorization.annotation.CheckPermissionByAccount;
 import com.sequenceiq.authorization.annotation.CheckPermissionByResourceCrn;
 import com.sequenceiq.authorization.annotation.CheckPermissionByResourceName;
 import com.sequenceiq.authorization.annotation.CheckPermissionByResourceNameList;
-import com.sequenceiq.authorization.annotation.FilterListBasedOnPermissions;
 import com.sequenceiq.authorization.annotation.ResourceCrn;
 import com.sequenceiq.authorization.annotation.ResourceName;
 import com.sequenceiq.authorization.annotation.ResourceNameList;
@@ -77,7 +76,7 @@ public class ClusterTemplateV4Controller extends NotificationController implemen
     }
 
     @Override
-    @FilterListBasedOnPermissions(action = AuthorizationResourceAction.DESCRIBE_CLUSTER_DEFINITION)
+    @CheckPermissionByAccount(action = AuthorizationResourceAction.LIST_SHARED_RESOURCES)
     public ClusterTemplateViewV4Responses list(Long workspaceId) {
         blueprintService.updateDefaultBlueprintCollection(workspaceId);
         clusterTemplateService.updateDefaultClusterTemplates(workspaceId);

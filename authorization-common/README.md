@@ -22,7 +22,7 @@ Every user who would like to do something regarding a resource should get an Res
 5. Fill in the necessary information about the action in [actions.json](src/main/resources/actions.json)
    - key should be the new value of the enum
    - `right` should be the same value for the desired right as in UMS code
-   - `resourceType` should be a value from `AuthorizationResourceType` which controls, what logic should be called during authorization check to find out the CRN of the resource
+   - `resourceType` should be a value from `AuthorizationResourceType` which controls, what logic should be called during authorization check to find out the CRN of the resource (which mean that in case of account level authorization you don't need to define this)
    - `legacyRight` should be the right (defined in UMS) used in the legacy authorization (where everything were checked on account level with read or write rights)
 6. Annotate your API method in Controller class with desired annotation, detailed explanation below.
 7. If necessary, implement logics needed to find out resource CRNs, detailed explanation below.

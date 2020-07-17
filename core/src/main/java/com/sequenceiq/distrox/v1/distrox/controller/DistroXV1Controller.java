@@ -22,7 +22,6 @@ import com.sequenceiq.authorization.annotation.CheckPermissionByResourceName;
 import com.sequenceiq.authorization.annotation.CheckPermissionByResourceNameList;
 import com.sequenceiq.authorization.annotation.CheckPermissionByResourceObject;
 import com.sequenceiq.authorization.annotation.DisableCheckPermissions;
-import com.sequenceiq.authorization.annotation.FilterListBasedOnPermissions;
 import com.sequenceiq.authorization.annotation.ResourceCrn;
 import com.sequenceiq.authorization.annotation.ResourceCrnList;
 import com.sequenceiq.authorization.annotation.ResourceName;
@@ -86,7 +85,7 @@ public class DistroXV1Controller implements DistroXV1Endpoint {
     private DelegatingRequestToCliRequestConverter delegatingRequestToCliRequestConverter;
 
     @Override
-    @FilterListBasedOnPermissions(action = AuthorizationResourceAction.DESCRIBE_DATAHUB)
+    @CheckPermissionByAccount(action = AuthorizationResourceAction.LIST_DATAHUBS)
     public StackViewV4Responses list(String environmentName, String environmentCrn) {
         StackViewV4Responses stackViewV4Responses;
         List<StackType> stackTypes = List.of(StackType.WORKLOAD);
