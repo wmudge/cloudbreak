@@ -2,6 +2,8 @@ package com.sequenceiq.periscope.monitor.handler;
 
 import static java.lang.Math.ceil;
 
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -48,30 +50,37 @@ public class ScalingHandler implements ApplicationListener<ScalingEvent> {
 
     @Override
     public void onApplicationEvent(ScalingEvent event) {
-        BaseAlert alert = event.getAlert();
-        Cluster cluster = clusterService.findById(alert.getCluster().getId());
+        Set<BaseAlert> alerts = event.getAlerts();
+        Long clusterId = alerts.stream().findFirst().map(ma -> ma.getCluster().getId()).orElseThrow();
+        Cluster cluster = clusterService.findById(clusterId);
         MDCBuilder.buildMdcContext(cluster);
-        scale(cluster, alert.getScalingPolicy());
+        if (isCooldownElapsed(cluster)) {
+            alerts.forEach(alert -> scale(cluster, alert.getScalingPolicy()));
+        }
     }
 
     private void scale(Cluster cluster, ScalingPolicy policy) {
+        int totalNodes = Math.toIntExact(cloudbreakClient.autoscaleEndpoint().getHostMetadataCountForAutoscale(cluster.getStackId(), policy.getHostGroup()));
+        int desiredNodeCount = getDesiredNodeCount(cluster, policy, totalNodes);
+        if (totalNodes != desiredNodeCount) {
+            Runnable scalingRequest = (Runnable) applicationContext.getBean("ScalingRequest", cluster, policy, totalNodes, desiredNodeCount);
+            loggedExecutorService.submit("ScalingHandler", scalingRequest);
+            rejectedThreadService.remove(cluster.getId());
+            cluster.setLastScalingActivityCurrent();
+            clusterService.save(cluster);
+        } else {
+            LOGGER.info("No scaling activity required");
+        }
+    }
+
+    private boolean isCooldownElapsed(Cluster cluster) {
         long remainingTime = getRemainingCooldownTime(cluster);
         if (remainingTime <= 0) {
-            int totalNodes = Math.toIntExact(cloudbreakClient.autoscaleEndpoint().getHostMetadataCountForAutoscale(cluster.getStackId(), policy.getHostGroup()));
-            int desiredNodeCount = getDesiredNodeCount(cluster, policy, totalNodes);
-            if (totalNodes != desiredNodeCount) {
-                Runnable scalingRequest = (Runnable) applicationContext.getBean("ScalingRequest", cluster, policy, totalNodes, desiredNodeCount);
-                loggedExecutorService.submit("ScalingHandler", scalingRequest);
-                rejectedThreadService.remove(cluster.getId());
-                cluster.setLastScalingActivityCurrent();
-                clusterService.save(cluster);
-            } else {
-                LOGGER.info("No scaling activity required");
-            }
-        } else {
-            LOGGER.info("Cluster cannot be scaled for {} min(s)",
-                    ClusterUtils.TIME_FORMAT.format((double) remainingTime / TimeUtil.MIN_IN_MS));
+            return true;
         }
+        LOGGER.info("Cluster cannot be scaled for {} min(s)",
+                ClusterUtils.TIME_FORMAT.format((double) remainingTime / TimeUtil.MIN_IN_MS));
+        return false;
     }
 
     private long getRemainingCooldownTime(Cluster cluster) {
