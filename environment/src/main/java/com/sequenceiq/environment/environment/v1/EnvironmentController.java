@@ -32,6 +32,7 @@ import com.sequenceiq.cloudbreak.auth.ThreadBasedUserCrnProvider;
 import com.sequenceiq.cloudbreak.auth.security.internal.InternalReady;
 import com.sequenceiq.cloudbreak.auth.security.internal.TenantAwareParam;
 import com.sequenceiq.common.api.telemetry.request.FeaturesRequest;
+import com.sequenceiq.environment.api.v1.credential.model.response.CredentialResponse;
 import com.sequenceiq.environment.api.v1.environment.endpoint.EnvironmentEndpoint;
 import com.sequenceiq.environment.api.v1.environment.model.request.EnvironmentChangeCredentialRequest;
 import com.sequenceiq.environment.api.v1.environment.model.request.EnvironmentEditRequest;
@@ -266,6 +267,12 @@ public class EnvironmentController implements EnvironmentEndpoint {
     @CheckPermissionByResourceCrn(action = AuthorizationResourceAction.STOP_ENVIRONMENT)
     public void postStopByCrn(@ResourceCrn @TenantAwareParam String crn) {
         environmentStopService.stopByCrn(crn);
+    }
+
+    @Override
+    @CheckPermissionByResourceCrn(action = AuthorizationResourceAction.DESCRIBE_ENVIRONMENT)
+    public CredentialResponse verifyByCrn(@ResourceCrn String crn) {
+        throw new UnsupportedOperationException("Environment verification is not supported.");
     }
 
     @Override
