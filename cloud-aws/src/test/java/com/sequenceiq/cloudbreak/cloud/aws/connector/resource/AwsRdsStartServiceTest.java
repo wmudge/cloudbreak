@@ -14,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,7 +35,9 @@ import com.sequenceiq.cloudbreak.cloud.model.DatabaseServer;
 import com.sequenceiq.cloudbreak.cloud.model.DatabaseStack;
 import com.sequenceiq.cloudbreak.cloud.model.Location;
 import com.sequenceiq.cloudbreak.cloud.model.Region;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AwsRdsStartServiceTest {
 
     private static final String REGION = "region";
